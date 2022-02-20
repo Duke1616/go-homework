@@ -41,7 +41,6 @@ func (f *FatRateRank) UserRegister() {
 		case oName, ok := <- f.readNameCh:
 			if !ok {
 				time.Sleep(2 * time.Second)
-				fmt.Println(f.items)
 				for _, item := range f.items {
 					f.updateCh <- item.Name
 				}
@@ -59,7 +58,6 @@ func (f *FatRateRank) UserRegister() {
 }
 
 func (f *FatRateRank) GetUserFatRateRank() {
-	defer f.wg.Done()
 	for {
 		select {
 		case oName := <- f.getUserCh:
@@ -102,7 +100,7 @@ func goRun() {
 		readNameCh:   make(chan string, 1000),
 		updateCh:     make(chan string),
 		getUserCh:    make(chan string),
-		PersonNumber: 5,
+		PersonNumber: 1000,
 		min:          0,
 		max:          0.4,
 	}
