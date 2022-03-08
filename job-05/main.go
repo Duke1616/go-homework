@@ -28,7 +28,11 @@ func main() {
 			rank := rankSvc.rank.GetRank(fatRate)
 			fmt.Println("姓名: ", pi.Name, "排名：", rank, "体脂率: ", fatRate)
 		case "2":
-			RecordModification.ReadFileData()
+			err := RecordModification.ReadFileData()
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
 			var serial string
 			fmt.Println("根据编号选择修改的数据: ")
 			fmt.Scanln(&serial)
