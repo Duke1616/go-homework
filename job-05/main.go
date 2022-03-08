@@ -37,6 +37,9 @@ func main() {
 			fmt.Println("根据编号选择修改的数据: ")
 			fmt.Scanln(&serial)
 			name, fatRate := RecordModification.UpdateFile(serial)
+			if fatRate == 0 {
+				continue
+			}
 			rank := rankSvc.rank.GetRank(fatRate)
 			fmt.Println("姓名: ", name, "排名：", rank, "体脂率: ", fatRate)
 		case "3":

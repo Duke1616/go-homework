@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	gobmi "github.com/Duke1616/go-bmi"
+	"io"
 	"learn.go/pkg/apis"
 	"log"
+	"os"
 	"os/exec"
 	"strconv"
 )
@@ -78,18 +81,50 @@ func (m *Modification) ShellCommand(serial string, data []byte) {
 	ArgsCreate := "i"
 	CommandCreate := serial + ArgsCreate + " " + string(data)
 	cmd1 := exec.Command(CommandShell, "-i", CommandDelete, m.filePath)
-	cmd2 := exec.Command(CommandShell, "-i", CommandCreate, m.filePath)
-	bytes1, err := cmd1.Output()
-	if err != nil {
-		log.Println(err)
+	_, err1 := cmd1.Output()
+	if err1 != nil {
+		log.Println(err1)
 	}
-	resp1 := string(bytes1)
-	log.Println(resp1)
 
-	bytes2, err := cmd2.Output()
+	fp, err := os.OpenFile(m.filePath, os.O_RDONLY, 0644)
 	if err != nil {
-		log.Println(err)
+		fmt.Println("读取json文件失败", err)
+		return
 	}
-	resp2 := string(bytes2)
-	log.Println(resp2)
+	defer fp.Close()
+
+	for {
+		br := bufio.NewReader(fp)
+		_, _, c := br.ReadLine()
+		if c == io.EOF {
+			m.WriteFileSave(data)
+			break
+		}
+		cmd2 := exec.Command(CommandShell, "-i", CommandCreate, m.filePath)
+		_, err2 := cmd2.Output()
+		if err2 != nil {
+			log.Println(err2)
+		}
+		break
+	}
+
+
+	//cmd2 := exec.Command(CommandShell, "-i", CommandCreate, m.filePath)
+	//bytes2, err2 := cmd2.Output()
+	//if err2 != nil {
+	//	log.Println(err2)
+	//}
+	//resp2 := string(bytes2)
+	//log.Println(resp2)
+}
+
+func (m *Modification) WriteFileSave(data []byte) {
+	file, err := os.OpenFile(m.filePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0777)
+	if err != nil {
+		fmt.Println("无法打开文件", m.filePath, err)
+	}
+
+	defer file.Close()
+
+	file.Write(append(data, '\n'))
 }

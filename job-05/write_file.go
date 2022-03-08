@@ -70,7 +70,7 @@ func (w *WriteMysql) Write() {
 func (w *WriteFile) initGlobalRankStandard() {
 	init := sync.Once{}
 	init.Do(func() {
-		fp, err := os.OpenFile(w.filePath, os.O_RDONLY, 0755)
+		fp, err := os.OpenFile(w.filePath, os.O_RDONLY, 0644)
 		if err != nil {
 			fmt.Println("读取json文件失败", err)
 			return
